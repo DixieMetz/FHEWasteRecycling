@@ -1,0 +1,27 @@
+{
+  "name": "confidential-waste-recycling-dapp-v2",
+  "version": "1.0.0",
+  "description": "Confidential Waste Recycling DApp with FHE blockchain technology",
+  "main": "public/index.html",
+  "scripts": {
+    "build": "echo 'No build step required for static files'",
+    "start": "npx http-server public -p 3000 -c-1 --cors",
+    "deploy": "npx vercel --prod"
+  },
+  "keywords": [
+    "blockchain",
+    "fhe",
+    "waste-recycling",
+    "zama",
+    "ethereum",
+    "dapp"
+  ],
+  "author": "Confidential Waste Recycling Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
