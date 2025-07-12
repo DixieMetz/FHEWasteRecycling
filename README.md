@@ -8,7 +8,7 @@
 
 > **Privacy-preserving waste management system powered by Fully Homomorphic Encryption (FHE)**
 
-🌐 **[Live Demo](https://fhe-waste-recycling.vercel.app/)** | 📹 **[Video Demo](./demo.mp4)** | 📚 **[Documentation](./DEPLOYMENT.md)** | 🔗 **[Contract on Sepolia](https://sepolia.etherscan.io/address/0x6a65Ea0Ce4F2fc31acFA2722d0153145dc48Cc83)**
+🌐 **[Live Demo](https://fhe-waste-recycling.vercel.app/)** | 📹 **[Video Demo demo.mp4]** | 📚 **[Documentation](./DEPLOYMENT.md)** | 🔗 **[Contract on Sepolia](https://sepolia.etherscan.io/address/0x6a65Ea0Ce4F2fc31acFA2722d0153145dc48Cc83)**
 
 ---
 
@@ -218,7 +218,7 @@ npm run interact
 4. Verification workflow
 5. Period statistics (aggregate encrypted data)
 
-**Download**: [demo.mp4](./demo.mp4) - Click to download and watch locally
+**Download**: [demo.mp4] - Click to download and watch locally
 
 ---
 
