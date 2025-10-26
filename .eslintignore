@@ -1,0 +1,13 @@
+node_modules/
+artifacts/
+cache/
+coverage/
+dist/
+build/
+deployments/
+typechain-types/
+.env
+.env.*
+*.min.js
+*.bundle.js
+hardhat.config.js
