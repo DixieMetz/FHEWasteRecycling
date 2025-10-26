@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Confidential Waste Recycling - FHE Blockchain App</title>
+    <meta name="description" content="Secure waste recycling tracking using Fully Homomorphic Encryption on Sepolia blockchain. Report plastic, paper, glass, metal, and organic waste confidentially.">
+    <meta name="keywords" content="waste recycling, FHE, blockchain, Zama, confidential data, encryption">
+    <meta name="author" content="Confidential Waste Recycling">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Confidential Waste Recycling - FHE Blockchain App">
+    <meta property="og:description" content="Secure waste recycling tracking using Fully Homomorphic Encryption">
+    <meta property="og:image" content="/icon-192.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Confidential Waste Recycling - FHE Blockchain App">
+    <meta property="twitter:description" content="Secure waste recycling tracking using Fully Homomorphic Encryption">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            background-attachment: fixed !important;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .status-connected {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .status-disconnected {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .waste-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner-border {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .alert-info {
+            background: rgba(23, 162, 184, 0.1);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            color: #0c5460;
+        }
+
+        .encryption-notice {
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #4c5a8a;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">♻️ Confidential Waste Recycling</a>
+            <div class="navbar-nav ms-auto">
+                <span id="networkStatus" class="navbar-text me-3" style="color: #ffc107;">
+                    🌐 Network: Unknown
+                </span>
+                <span id="connectionStatus" class="navbar-text status-disconnected">
+                    🔌 Not Connected
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="encryption-notice">
+                    <h6>🔒 Privacy Protection</h6>
+                    <p class="mb-0">All waste data is encrypted using Fully Homomorphic Encryption (FHE). Your sensitive recycling information remains private while contributing to aggregate statistics.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">🔗 Wallet Connection</h5>
+                    </div>
+                    <div class="card-body">
+                        <button id="connectBtn" class="btn btn-success me-2">Connect Wallet</button>
+                        <span id="walletAddress" class="text-muted"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Period Info -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">📊 Current Reporting Period</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Period:</strong> <span id="currentPeriod">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Reports:</strong> <span id="periodReports">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Status:</strong> <span id="periodStatus">-</span>
+                            </div>
+                            <div class="col-md-3">
+                                <button id="refreshInfo" class="btn btn-info btn-sm">Refresh Info</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Submission Form -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">📝 Submit Recycling Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="reportForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">🥤 Plastic Waste (kg)</label>
+                                        <input type="number" class="form-control" id="plasticWeight" min="0" step="0.1" placeholder="0.0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">📄 Paper Waste (kg)</label>
+                                        <input type="number" class="form-control" id="paperWeight" min="0" step="0.1" placeholder="0.0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">🍶 Glass Waste (kg)</label>
+                                        <input type="number" class="form-control" id="glassWeight" min="0" step="0.1" placeholder="0.0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">🔧 Metal Waste (kg)</label>
+                                        <input type="number" class="form-control" id="metalWeight" min="0" step="0.1" placeholder="0.0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">🌱 Organic Waste (kg)</label>
+                                        <input type="number" class="form-control" id="organicWeight" min="0" step="0.1" placeholder="0.0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">⚡ Energy Generated (kWh)</label>
+                                        <input type="number" class="form-control" id="energyGenerated" min="0" step="0.1" placeholder="0.0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">🌍 CO2 Reduction (kg)</label>
+                                        <input type="number" class="form-control" id="carbonReduced" min="0" step="0.1" placeholder="0.0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-end">
+                                        <button type="submit" id="submitReport" class="btn btn-success" disabled>
+                                            Submit Encrypted Report
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reporter Authorization -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">👤 Reporter Authorization</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="reporterAddress" placeholder="Reporter Address">
+                        </div>
+                        <button id="authorizeReporter" class="btn btn-info" disabled>Authorize Reporter</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">✅ Report Verification</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <input type="number" class="form-control" id="reportId" placeholder="Report ID" min="1">
+                        </div>
+                        <button id="verifyReport" class="btn btn-info" disabled>Verify Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div class="row">
+            <div class="col-12">
+                <div id="statusMessages"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Contract configuration - Replace with your deployed contract address
+        const CONTRACT_ADDRESS = "0x6a65Ea0Ce4F2fc31acFA2722d0153145dc48Cc83";
+
+        // Network configuration for Sepolia testnet
+        const SEPOLIA_NETWORK = {
+            chainId: '0xaa36a7', // 11155111 in hex
+            chainName: 'Sepolia Test Network',
+            nativeCurrency: {
+                name: 'Sepolia Ether',
+                symbol: 'ETH',
+                decimals: 18
+            },
+            rpcUrls: ['https://sepolia.infura.io/v3/', 'https://rpc.sepolia.org'],
+            blockExplorerUrls: ['https://sepolia.etherscan.io']
+        };
+        const CONTRACT_ABI = [
+            "function owner() view returns (address)",
+            "function currentPeriod() view returns (uint32)",
+            "function totalReports() view returns (uint32)",
+            "function authorizeReporter(address _reporter)",
+            "function submitReport(uint32 _plasticWeight, uint32 _paperWeight, uint32 _glassWeight, uint32 _metalWeight, uint32 _organicWeight, uint64 _energyGenerated, uint32 _carbonReduced)",
+            "function verifyReport(uint32 _reportId)",
+            "function finalizePeriod()",
+            "function getCurrentPeriodInfo() view returns (uint32 period, uint32 reportCount, uint256 startTime, bool isFinalized)",
+            "function isAuthorizedReporter(address _reporter) view returns (bool)",
+            "function hasReportedThisPeriod(address _reporter) view returns (bool)",
+            "function getReportInfo(uint32 _reportId) view returns (address reporter, uint256 timestamp, bool isVerified)",
+            "event ReportSubmitted(address indexed reporter, uint32 indexed reportId, uint32 indexed period)",
+            "event ReportVerified(uint32 indexed reportId, address indexed verifier)",
+            "event ReporterAuthorized(address indexed reporter)"
+        ];
+
+        // Global variables
+        let provider;
+        let signer;
+        let contract;
+        let userAddress;
+
+        // DOM elements
+        const connectBtn = document.getElementById('connectBtn');
+        const walletAddress = document.getElementById('walletAddress');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const reportForm = document.getElementById('reportForm');
+        const submitReport = document.getElementById('submitReport');
+        const authorizeReporter = document.getElementById('authorizeReporter');
+        const verifyReport = document.getElementById('verifyReport');
+        const refreshInfo = document.getElementById('refreshInfo');
+
+        // Event listeners
+        connectBtn.addEventListener('click', connectWallet);
+        reportForm.addEventListener('submit', handleReportSubmission);
+        authorizeReporter.addEventListener('click', handleAuthorizeReporter);
+        verifyReport.addEventListener('click', handleVerifyReport);
+        refreshInfo.addEventListener('click', loadContractInfo);
+
+        async function switchToSepoliaNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: SEPOLIA_NETWORK.chainId }],
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [SEPOLIA_NETWORK],
+                        });
+                    } catch (addError) {
+                        showMessage('Failed to add Sepolia network: ' + addError.message, 'danger');
+                        throw addError;
+                    }
+                } else {
+                    showMessage('Failed to switch to Sepolia network: ' + switchError.message, 'danger');
+                    throw switchError;
+                }
+            }
+        }
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    showMessage('Please install MetaMask!', 'danger');
+                    return;
+                }
+
+                connectBtn.textContent = 'Connecting...';
+                connectBtn.disabled = true;
+
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                // Switch to Sepolia network
+                showMessage('Switching to Sepolia network...', 'info');
+                await switchToSepoliaNetwork();
+
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                // Initialize contract
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                // Check and display network
+                const network = await provider.getNetwork();
+                const networkStatus = document.getElementById('networkStatus');
+                if (network.chainId.toString() === '11155111') {
+                    networkStatus.textContent = '🌐 Sepolia Testnet';
+                    networkStatus.style.color = '#28a745';
+                } else {
+                    networkStatus.textContent = `🌐 Chain ID: ${network.chainId}`;
+                    networkStatus.style.color = '#dc3545';
+                }
+
+                // Update UI
+                walletAddress.textContent = `Connected: ${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+                connectionStatus.textContent = '🟢 Connected';
+                connectionStatus.className = 'navbar-text status-connected';
+                connectBtn.textContent = 'Connected';
+                connectBtn.disabled = true;
+
+                // Enable buttons
+                submitReport.disabled = false;
+                authorizeReporter.disabled = false;
+                verifyReport.disabled = false;
+
+                // Load contract info
+                await loadContractInfo();
+                await checkReporterStatus();
+
+                showMessage('Connected to Sepolia! ✅', 'success');
+            } catch (error) {
+                console.error('Connection error:', error);
+                showMessage('Failed to connect wallet: ' + error.message, 'danger');
+                connectBtn.textContent = 'Connect Wallet';
+                connectBtn.disabled = false;
+            }
+        }
+
+        async function loadContractInfo() {
+            try {
+                if (!contract) return;
+
+                const periodInfo = await contract.getCurrentPeriodInfo();
+                document.getElementById('currentPeriod').textContent = periodInfo.period.toString();
+                document.getElementById('periodReports').textContent = periodInfo.reportCount.toString();
+                document.getElementById('periodStatus').textContent = periodInfo.isFinalized ? 'Finalized' : 'Active';
+            } catch (error) {
+                console.error('Error loading contract info:', error);
+            }
+        }
+
+        async function checkReporterStatus() {
+            try {
+                if (!contract || !userAddress) return;
+
+                const isAuthorized = await contract.isAuthorizedReporter(userAddress);
+                const hasReported = await contract.hasReportedThisPeriod(userAddress);
+
+                if (!isAuthorized) {
+                    showMessage('You need to be authorized as a reporter to submit reports.', 'warning');
+                    submitReport.disabled = true;
+                } else if (hasReported) {
+                    showMessage('You have already submitted a report for this period.', 'info');
+                    submitReport.disabled = true;
+                } else {
+                    submitReport.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error checking reporter status:', error);
+            }
+        }
+
+        async function handleReportSubmission(event) {
+            event.preventDefault();
+
+            try {
+                const plasticWeight = Math.floor(parseFloat(document.getElementById('plasticWeight').value || 0) * 10); // Convert to grams
+                const paperWeight = Math.floor(parseFloat(document.getElementById('paperWeight').value || 0) * 10);
+                const glassWeight = Math.floor(parseFloat(document.getElementById('glassWeight').value || 0) * 10);
+                const metalWeight = Math.floor(parseFloat(document.getElementById('metalWeight').value || 0) * 10);
+                const organicWeight = Math.floor(parseFloat(document.getElementById('organicWeight').value || 0) * 10);
+                const energyGenerated = Math.floor(parseFloat(document.getElementById('energyGenerated').value || 0) * 10);
+                const carbonReduced = Math.floor(parseFloat(document.getElementById('carbonReduced').value || 0) * 10);
+
+                if (plasticWeight === 0 && paperWeight === 0 && glassWeight === 0 && metalWeight === 0 && organicWeight === 0) {
+                    showMessage('Please enter at least one waste amount.', 'warning');
+                    return;
+                }
+
+                showMessage('Submitting encrypted report...', 'info');
+                submitReport.disabled = true;
+
+                const tx = await contract.submitReport(
+                    plasticWeight,
+                    paperWeight,
+                    glassWeight,
+                    metalWeight,
+                    organicWeight,
+                    energyGenerated,
+                    carbonReduced
+                );
+
+                showMessage('Transaction sent. Waiting for confirmation...', 'info');
+                await tx.wait();
+
+                showMessage('Report submitted successfully! Your data is now encrypted and stored.', 'success');
+                reportForm.reset();
+                await loadContractInfo();
+                await checkReporterStatus();
+
+            } catch (error) {
+                console.error('Error submitting report:', error);
+                showMessage('Failed to submit report: ' + error.message, 'danger');
+                submitReport.disabled = false;
+            }
+        }
+
+        async function handleAuthorizeReporter() {
+            try {
+                const reporterAddr = document.getElementById('reporterAddress').value;
+                if (!reporterAddr) {
+                    showMessage('Please enter a reporter address.', 'warning');
+                    return;
+                }
+
+                showMessage('Authorizing reporter...', 'info');
+                const tx = await contract.authorizeReporter(reporterAddr);
+                await tx.wait();
+
+                showMessage('Reporter authorized successfully!', 'success');
+                document.getElementById('reporterAddress').value = '';
+            } catch (error) {
+                console.error('Error authorizing reporter:', error);
+                showMessage('Failed to authorize reporter: ' + error.message, 'danger');
+            }
+        }
+
+        async function handleVerifyReport() {
+            try {
+                const reportId = document.getElementById('reportId').value;
+                if (!reportId) {
+                    showMessage('Please enter a report ID.', 'warning');
+                    return;
+                }
+
+                showMessage('Verifying report...', 'info');
+                const tx = await contract.verifyReport(reportId);
+                await tx.wait();
+
+                showMessage('Report verified successfully!', 'success');
+                document.getElementById('reportId').value = '';
+                await loadContractInfo();
+            } catch (error) {
+                console.error('Error verifying report:', error);
+                showMessage('Failed to verify report: ' + error.message, 'danger');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('statusMessages');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            messagesDiv.appendChild(alertDiv);
+
+            // Remove message after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Check if wallet is already connected
+        window.addEventListener('load', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        await connectWallet();
+                    }
+                } catch (error) {
+                    console.error('Error checking accounts:', error);
+                }
+            }
+        });
+
+        // Handle account changes
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.on('accountsChanged', async (accounts) => {
+                if (accounts.length === 0) {
+                    location.reload();
+                } else {
+                    await connectWallet();
+                }
+            });
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
