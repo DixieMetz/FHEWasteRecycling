@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push checks..."
+
+# Run full test suite with coverage
+echo "🧪 Running full test suite with coverage..."
+npm run test:coverage || {
+  echo "❌ Tests with coverage failed. Please fix the failing tests."
+  exit 1
+}
+
+# Check for security vulnerabilities
+echo "🔒 Checking for security vulnerabilities..."
+npm audit --audit-level=moderate || {
+  echo "⚠️  Security vulnerabilities found. Please review and fix."
+  # Non-blocking for now
+}
+
+# Ensure build succeeds
+echo "🔨 Verifying build..."
+npm run compile || {
+  echo "❌ Build failed. Please fix compilation errors."
+  exit 1
+}
+
+echo "✅ All pre-push checks passed!"
