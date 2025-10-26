@@ -1,0 +1,145 @@
+# Deployment Checklist
+
+## Pre-Deployment
+
+### Environment Setup
+- [ ] Node.js >= 18.0.0 installed
+- [ ] npm >= 9.0.0 installed
+- [ ] Dependencies installed (`npm install`)
+- [ ] `.env` file created from `.env.example`
+- [ ] `PRIVATE_KEY` configured in `.env`
+- [ ] `ETHERSCAN_API_KEY` configured in `.env`
+
+### Wallet Setup
+- [ ] MetaMask installed and configured
+- [ ] Account has sufficient Sepolia ETH (> 0.01 ETH)
+- [ ] Private key matches the funded account
+- [ ] Network set to Sepolia in MetaMask
+
+### Code Quality
+- [ ] All tests passing (`npm run test`)
+- [ ] Code compiled without errors (`npm run compile`)
+- [ ] Linting passed (`npm run lint`)
+- [ ] Code formatted (`npm run format`)
+
+## Deployment
+
+### Compile
+- [ ] Run `npm run compile`
+- [ ] Verify artifacts generated in `artifacts/`
+- [ ] No compilation warnings or errors
+
+### Test
+- [ ] Run `npm run test`
+- [ ] All tests passing
+- [ ] Coverage acceptable (`npm run test:coverage`)
+
+### Deploy
+- [ ] Run `npm run deploy`
+- [ ] Deployment successful
+- [ ] Contract address saved
+- [ ] Transaction hash recorded
+- [ ] Deployment info saved in `deployments/sepolia-deployment.json`
+
+## Post-Deployment
+
+### Verification
+- [ ] Run `npm run verify`
+- [ ] Contract verified on Etherscan
+- [ ] Source code visible on Etherscan
+- [ ] Verification link saved
+
+### Testing on Network
+- [ ] Run `npm run interact`
+- [ ] Contract state retrieved successfully
+- [ ] Owner address correct
+- [ ] Initial values correct
+
+### Documentation
+- [ ] Update `README.md` with contract address (if needed)
+- [ ] Save deployment information
+- [ ] Document any issues encountered
+- [ ] Update team on deployment status
+
+## Security
+
+### Access Control
+- [ ] Owner address is correct
+- [ ] No unauthorized access possible
+- [ ] Private keys secured
+- [ ] `.env` not committed to git
+
+### Contract Review
+- [ ] Contract functions working as expected
+- [ ] No critical bugs found
+- [ ] Gas costs acceptable
+- [ ] Security best practices followed
+
+## Monitoring
+
+### Initial Setup
+- [ ] Bookmark Etherscan contract page
+- [ ] Monitor first few transactions
+- [ ] Check events are emitted correctly
+- [ ] Verify state changes as expected
+
+### Long-term
+- [ ] Set up transaction monitoring
+- [ ] Monitor gas costs
+- [ ] Track contract usage
+- [ ] Plan for upgrades (if needed)
+
+## Rollback Plan
+
+### If Issues Found
+- [ ] Document the issue
+- [ ] Do NOT use the contract
+- [ ] Review the problem
+- [ ] Fix code and redeploy
+- [ ] Update documentation
+
+## Final Checks
+
+- [ ] Contract deployed successfully
+- [ ] Contract verified on Etherscan
+- [ ] All tests passing
+- [ ] Documentation updated
+- [ ] Team notified
+- [ ] Deployment info backed up
+
+---
+
+## Deployment Info Template
+
+```
+Deployment Date: _______________
+Network: Sepolia
+Contract Address: _______________
+Transaction Hash: _______________
+Deployer Address: _______________
+Etherscan Link: _______________
+Verified: Yes/No
+Gas Used: _______________
+Gas Price: _______________
+Total Cost: _______________ ETH
+```
+
+---
+
+## Quick Commands
+
+```bash
+# Full deployment workflow
+npm run compile
+npm run test
+npm run deploy
+npm run verify
+npm run interact
+
+# Verify deployment
+npx hardhat run scripts/interact.js --network sepolia
+```
+
+---
+
+**Last Updated**: October 2025
