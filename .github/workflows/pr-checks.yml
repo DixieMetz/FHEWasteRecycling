@@ -64,7 +64,7 @@ jobs:
           find artifacts/contracts -name "*.json" ! -name "*.dbg.json" -exec du -h {} \; | sort -hr | head -10
 
       - name: Comment on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: always()
         with:
           script: |
