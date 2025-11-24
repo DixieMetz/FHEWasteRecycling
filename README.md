@@ -38,7 +38,7 @@ The Confidential Waste Recycling platform revolutionizes waste management by imp
 - **Resource Recovery**: Monitor material recovery rates across categories
 - **Efficiency Analytics**: Compare recycling performance across reporting periods
 
-Live ：https://fhe-innovation-evaluation.vercel.app/
+Live ：https://fhe-waste-recycling.vercel.app/
 Video:demo.mp4
 
 ## Table of Contents
