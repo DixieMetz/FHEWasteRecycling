@@ -1,32 +1,751 @@
-# 🔐 Confidential Waste Recycling Platform
+# Confidential Waste Recycling
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Solidity](https://img.shields.io/badge/Solidity-0.8.24-blue.svg)](https://soliditylang.org/)
-[![Hardhat](https://img.shields.io/badge/Hardhat-2.22.0-yellow.svg)](https://hardhat.org/)
-[![Test Coverage](https://img.shields.io/badge/Coverage-95%25-brightgreen.svg)](./TESTING.md)
-[![Zama FHEVM](https://img.shields.io/badge/Zama-FHEVM-green.svg)](https://docs.zama.ai)
+A privacy-preserving waste management and recycling tracking system built on blockchain technology using Fully Homomorphic Encryption (FHE) to ensure data confidentiality while enabling statistical analysis.
 
-> **Privacy-preserving waste management system powered by Fully Homomorphic Encryption (FHE)**
+## 🌍 Core Concept
 
-🌐 **[Live Demo](https://fhe-waste-recycling.vercel.app/)** | 📹 **[Video Demo demo.mp4]** | 📚 **[Documentation](./DEPLOYMENT.md)** | 🔗 **[Contract on Sepolia](https://sepolia.etherscan.io/address/0x6a65Ea0Ce4F2fc31acFA2722d0153145dc48Cc83)**
+The Confidential Waste Recycling platform revolutionizes waste management by implementing **Fully Homomorphic Encryption (FHE)** technology to create a secure, transparent, and privacy-preserving ecosystem for waste tracking and recycling data analysis.
+
+### Key Features
+
+- **🔒 Privacy-First Design**: All sensitive waste data is encrypted using FHE technology, ensuring individual privacy while enabling aggregate statistical analysis
+- **📊 Confidential Analytics**: Perform computations on encrypted data without ever revealing the underlying information
+- **♻️ Comprehensive Tracking**: Monitor multiple waste categories including plastic, paper, glass, metal, and organic waste
+- **⚡ Energy Impact Measurement**: Track energy generation and carbon reduction from recycling activities
+- **🌐 Blockchain Transparency**: Immutable records on the Sepolia testnet ensure data integrity and auditability
+
+## 🛠️ Technology Stack
+
+- **Blockchain**: Ethereum Sepolia Testnet
+- **Encryption**: Fully Homomorphic Encryption (FHE)
+- **Smart Contracts**: Solidity
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Web3 Integration**: Ethers.js
+- **Styling**: Bootstrap 5
+
+## 📋 Waste Categories Tracked
+
+1. **Plastic Waste** - Bottles, containers, packaging materials
+2. **Paper Waste** - Documents, cardboard, newspapers
+3. **Glass Waste** - Bottles, jars, containers
+4. **Metal Waste** - Cans, scrap metal, aluminum
+5. **Organic Waste** - Food scraps, biodegradable materials
+
+## 📈 Environmental Impact Metrics
+
+- **Energy Generation**: Track renewable energy produced from waste processing
+- **Carbon Footprint Reduction**: Measure CO2 emissions saved through recycling
+- **Resource Recovery**: Monitor material recovery rates across categories
+- **Efficiency Analytics**: Compare recycling performance across reporting periods
+
+Live ：https://fhe-innovation-evaluation.vercel.app/
+Video:demo.mp4
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Contract Descriptions](#contract-descriptions)
+- [Architecture](#architecture)
+- [Security Considerations](#security-considerations)
+- [Quick Start](#quick-start)
+- [Environment Setup](#environment-setup)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Project Overview
+
+### What is DApp ?
+
+DApp is an advanced smart contract system designed for privacy-preserving decentralized applications. It combines multiple cutting-edge techniques:
+
+- **Fully Homomorphic Encryption (FHE)**: Allows computation on encrypted data without decryption
+- **Gateway Pattern**: Implements a callback-based pattern for asynchronous request handling
+- **Refund Mechanism**: Automatic refund system for failed or cancelled transactions
+- **Timeout Protection**: Prevents stuck transactions and ensures deterministic behavior
+
+### Use Cases
+
+- Confidential voting systems
+- Private financial calculations
+- Secure data sharing
+- Privacy-preserving auctions
+- Confidential asset transfers
+- Private computation services
+
+## Features
+
+### Architecture Features
+
+- **Modular Design**: Separate contracts for different concerns (transactions, division, validation, obfuscation)
+- **Gas Optimized**: Efficient storage and computation patterns
+- **Upgradeable**: Factory pattern support for future enhancements
+- **Scalable**: Supports multiple concurrent transactions
+
+### Security Features
+
+- **Access Control**: Role-based permissions for gateway and owner functions
+- **Input Validation**: Comprehensive validation of all external inputs
+- **Replay Protection**: Transaction hashing to prevent replay attacks
+- **Reentrancy Protection**: Guards against reentrancy attacks
+- **Timeout Protection**: Prevents infinite waiting and ensures progress
+
+### Privacy Features
+
+- **End-to-End Encryption**: Data encrypted before submission
+- **Privacy Preservation**: Sensitive calculations done on encrypted data
+- **Obfuscated Pricing**: Price information hidden from other parties
+- **Confidential Division**: Mathematical operations on encrypted values
+
+## Contract Descriptions
+
+### 1. GatewayTransaction
+
+The core contract managing asynchronous transaction requests with gateway callbacks.
+
+**Key Responsibilities:**
+- Submit encrypted transaction requests
+- Manage request lifecycle states (PENDING, PROCESSING, COMPLETED, REFUNDED)
+- Handle gateway callbacks with computed results
+- Process refunds for cancelled or timed-out requests
+- Track transaction history and states
+
+**Main Functions:**
+- `submitRequest()`: Submit a new encrypted transaction
+- `gatewayCallback()`: Process gateway response
+- `requestRefund()`: Request refund for a transaction
+- `getRequestStatus()`: Check current status
+- `getRequestHistory()`: Retrieve transaction history
+
+**Events:**
+- `RequestSubmitted`: Emitted when a new request is submitted
+- `RequestProcessed`: Emitted when gateway processes the request
+- `RefundProcessed`: Emitted when refund is completed
+- `TimeoutTriggered`: Emitted when timeout protection activates
+
+### 2. PrivacyPreservingDivision
+
+Performs cryptographic division operations on encrypted data.
+
+**Key Responsibilities:**
+- Execute division calculations on encrypted numerator and denominator
+- Maintain mathematical correctness while preserving privacy
+- Prevent division by zero attacks
+- Return encrypted quotient and remainder
+
+**Main Functions:**
+- `divideEncrypted()`: Perform encrypted division
+- `validateDivisor()`: Check divisor validity
+- `getResultProof()`: Generate proof of computation correctness
+
+**Security Properties:**
+- Divisor cannot be zero
+- Result is never revealed until explicitly decrypted
+- Computation details are hidden from observers
+
+### 3. SecurityValidator
+
+Validates and authenticates transactions before processing.
+
+**Key Responsibilities:**
+- Validate request signatures
+- Check sender permissions
+- Verify request freshness (prevent old requests)
+- Audit transaction attempts
+- Enforce security policies
+
+**Main Functions:**
+- `validateRequest()`: Check if request is valid
+- `verifySignature()`: Cryptographically verify signature
+- `checkPermissions()`: Verify caller has required role
+- `recordAuditLog()`: Log security events
+- `enforcePolicies()`: Apply security constraints
+
+**Security Checks:**
+- Nonce-based replay protection
+- Timestamp validation for freshness
+- Signature verification using ECDSA
+- Role-based access control
+
+### 4. PriceObfuscation
+
+Hides pricing information while maintaining correct calculations.
+
+**Key Responsibilities:**
+- Store encrypted price data
+- Calculate costs without revealing actual prices
+- Provide verifiable pricing without disclosure
+- Support price updates with audit trail
+
+**Main Functions:**
+- `setPriceEncrypted()`: Set encrypted price
+- `calculateCostEncrypted()`: Compute cost without revealing price
+- `verifyPrice()`: Prove price correctness without disclosure
+- `getPriceHash()`: Get verifiable price hash
+
+**Privacy Properties:**
+- Actual prices never stored in plaintext
+- Cost calculations done on encrypted data
+- Price transparency possible through zero-knowledge proofs
+
+## Security Considerations
+
+### Threat Model
+
+We consider attacks from:
+- **External Attackers**: Without contract access or valid signatures
+- **Malicious Gateways**: Could attempt to return incorrect results
+- **Front-running Attacks**: Other transactions trying to exploit our transactions
+- **Timing Attacks**: Attackers observing transaction timing patterns
+
+### Key Security Measures
+
+1. **Input Validation**: All external inputs validated before use
+2. **Access Control**: Only authorized addresses can perform sensitive operations
+3. **Reentrancy Protection**: Checks-effects-interactions pattern throughout
+4. **Timeout Protection**: Prevents stuck transactions
+5. **Refund Mechanism**: Ensures users can recover funds if needed
+
+### Known Limitations
+
+- Gateway must be trusted to compute results correctly (off-chain computation)
+- Timeout delay must be carefully chosen to balance security and responsiveness
+- FHE operations have computational overhead
+- Privacy relies on encryption scheme security
+
+### Recommendations
+
+- Always verify gateway identity before calling `gatewayCallback()`
+- Set reasonable timeout periods based on expected processing time
+- Monitor for unusual transaction patterns
+- Implement additional access controls at application layer
+- Regularly audit contract behavior
+- Use formal verification tools for critical functions
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 16+ and npm
+- Hardhat development environment
+- Solidity 0.8.0+
+- Basic knowledge of smart contracts
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd dapp
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+### Deploy Locally
+
+```bash
+# Compile contracts
+npx hardhat compile
+
+# Deploy to local network
+npx hardhat run scripts/deploy.js --network localhost
+
+# Or deploy to testnet
+npx hardhat run scripts/deploy.js --network sepolia
+```
+
+### Run Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run specific test
+npx hardhat test test/GatewayTransaction.test.js
+```
+
+## Environment Setup
+
+### Required Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# Network Configuration
+NETWORK_NAME=localhost
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+SEPOLIA_PRIVATE_KEY=your_private_key_here
+
+# Contract Configuration
+GATEWAY_ADDRESS=0x...
+OWNER_ADDRESS=0x...
+
+# Timeout Configuration (in seconds)
+REQUEST_TIMEOUT=3600
+
+# Gas Configuration
+GAS_PRICE_GWEI=20
+GAS_LIMIT=3000000
+
+# Security
+ENCRYPTION_KEY=your_encryption_key
+
+# Verification
+ETHERSCAN_API_KEY=your_etherscan_key
+```
+
+### Hardhat Configuration
+
+The project uses Hardhat for development. Configuration is in `hardhat.config.js`:
+
+```javascript
+require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
+
+module.exports = {
+  solidity: "0.8.20",
+  networks: {
+    sepolia: {
+      url: process.env.SEPOLIA_RPC_URL,
+      accounts: [process.env.SEPOLIA_PRIVATE_KEY]
+    }
+  }
+};
+```
+
+## API Documentation
+
+### GatewayTransaction Contract
+
+#### submitRequest
+
+```solidity
+function submitRequest(
+  bytes calldata encryptedData,
+  uint256 gasLimit,
+  uint256 timeoutDuration
+) external payable returns (uint256 requestId)
+```
+
+**Parameters:**
+- `encryptedData`: FHE-encrypted data for processing
+- `gasLimit`: Maximum gas for callback execution
+- `timeoutDuration`: Seconds until timeout triggers
+
+**Returns:**
+- `requestId`: Unique identifier for this request
+
+**Events Emitted:**
+- `RequestSubmitted(requestId, msg.sender, block.timestamp)`
+
+**Gas Cost:** ~50,000 gas
+
+**Example:**
+```javascript
+const encryptedData = await fhevm.encrypt(sensitiveData);
+const tx = await gateway.submitRequest(
+  encryptedData,
+  100000,
+  3600
+);
+const receipt = await tx.wait();
+const requestId = receipt.events[0].args.requestId;
+```
+
+#### gatewayCallback
+
+```solidity
+function gatewayCallback(
+  uint256 requestId,
+  bytes calldata result
+) external onlyGateway
+```
+
+**Parameters:**
+- `requestId`: ID of request being processed
+- `result`: Encrypted computation result
+
+**Access:** Only callable by registered gateway address
+
+**Events Emitted:**
+- `RequestProcessed(requestId, block.timestamp)`
+
+**Gas Cost:** ~60,000 gas
+
+**Example:**
+```javascript
+const computedResult = await fhevm.encrypt(result);
+await gateway.gatewayCallback(requestId, computedResult);
+```
+
+#### requestRefund
+
+```solidity
+function requestRefund(uint256 requestId) external
+```
+
+**Parameters:**
+- `requestId`: ID of request to refund
+
+**Conditions:**
+- Request must be PENDING or timed out
+- Caller must be original requester
+
+**Events Emitted:**
+- `RefundProcessed(requestId, refundAmount)`
+
+**Gas Cost:** ~40,000 gas
+
+**Example:**
+```javascript
+// Wait for timeout or cancel immediately if pending
+await gateway.requestRefund(requestId);
+```
+
+#### getRequestStatus
+
+```solidity
+function getRequestStatus(uint256 requestId)
+  external view
+  returns (RequestStatus status, uint256 submitTime, uint256 timeoutTime)
+```
+
+**Returns:**
+- `status`: Current RequestStatus (PENDING/PROCESSING/COMPLETED/REFUNDED)
+- `submitTime`: Block timestamp when submitted
+- `timeoutTime`: Block timestamp when timeout occurs
+
+**Example:**
+```javascript
+const [status, submitTime, timeoutTime] = await gateway.getRequestStatus(requestId);
+console.log(`Status: ${status}, Submitted: ${submitTime}, Timeout: ${timeoutTime}`);
+```
+
+### PrivacyPreservingDivision Contract
+
+#### divideEncrypted
+
+```solidity
+function divideEncrypted(
+  bytes calldata encryptedNumerator,
+  bytes calldata encryptedDenominator
+) external returns (bytes memory quotient, bytes memory remainder)
+```
+
+**Parameters:**
+- `encryptedNumerator`: Encrypted dividend
+- `encryptedDenominator`: Encrypted divisor
+
+**Returns:**
+- `quotient`: Encrypted quotient (encrypted result)
+- `remainder`: Encrypted remainder (encrypted result)
+
+**Reverts:** If denominator is zero
+
+**Gas Cost:** ~100,000 gas
+
+**Example:**
+```javascript
+const encNum = await fhevm.encrypt(100);
+const encDen = await fhevm.encrypt(3);
+const [q, r] = await divisionContract.divideEncrypted(encNum, encDen);
+// Result: quotient = encrypted(33), remainder = encrypted(1)
+```
+
+### SecurityValidator Contract
+
+#### validateRequest
+
+```solidity
+function validateRequest(
+  bytes calldata requestData,
+  bytes calldata signature
+) external view returns (bool isValid)
+```
+
+**Parameters:**
+- `requestData`: Encoded request details
+- `signature`: ECDSA signature from sender
+
+**Returns:**
+- `isValid`: True if all validation checks pass
+
+**Checks Performed:**
+- Signature validity
+- Sender permissions
+- Nonce not used before
+- Timestamp freshness
+
+**Gas Cost:** ~15,000 gas
+
+**Example:**
+```javascript
+const dataHash = ethers.utils.solidityKeccak256(['bytes'], [requestData]);
+const signature = await signer.signMessage(ethers.utils.arrayify(dataHash));
+const isValid = await validator.validateRequest(requestData, signature);
+```
+
+### PriceObfuscation Contract
+
+#### setPriceEncrypted
+
+```solidity
+function setPriceEncrypted(
+  bytes calldata encryptedPrice,
+  bytes calldata priceProof
+) external onlyOwner
+```
+
+**Parameters:**
+- `encryptedPrice`: FHE-encrypted price value
+- `priceProof`: Zero-knowledge proof of valid price
+
+**Access:** Only owner can set prices
+
+**Events Emitted:**
+- `PriceUpdated(block.timestamp)`
+
+**Gas Cost:** ~45,000 gas
+
+**Example:**
+```javascript
+const encPrice = await fhevm.encrypt(1000);
+const proof = await generatePriceProof(1000);
+await priceObfuscation.setPriceEncrypted(encPrice, proof);
+```
+
+## Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test file
+npm test test/GatewayTransaction.test.js
+
+# Run with verbose output
+npm test -- --verbose
+
+# Run with coverage report
+npm run test:coverage
+```
+
+### Test Structure
+
+Tests are located in the `test/` directory and include:
+
+1. **Unit Tests**: Individual contract function testing
+2. **Integration Tests**: Contract interactions
+3. **Security Tests**: Attack vector validation
+4. **Edge Case Tests**: Boundary conditions and corner cases
+
+### Example Test
+
+```javascript
+describe("GatewayTransaction", function () {
+  let gateway;
+  let owner, requester, gateway;
+
+  beforeEach(async function () {
+    [owner, requester, gatewayAddress] = await ethers.getSigners();
+    const Gateway = await ethers.getContractFactory("GatewayTransaction");
+    gateway = await Gateway.deploy(gatewayAddress.address);
+  });
+
+  it("Should submit a request successfully", async function () {
+    const encryptedData = ethers.utils.defaultAbiCoder.encode(['uint256'], [123]);
+    const tx = await gateway.connect(requester).submitRequest(
+      encryptedData,
+      100000,
+      3600
+    );
+    const receipt = await tx.wait();
+    expect(receipt.status).to.equal(1);
+  });
+});
+```
+
+### Test Coverage Goals
+
+- Line Coverage: >90%
+- Branch Coverage: >85%
+- Function Coverage: 100%
+
+## Deployment
+
+### Deployment Steps
+
+1. **Compile Contracts**
+   ```bash
+   npx hardhat compile
+   ```
+
+2. **Run Tests**
+   ```bash
+   npm test
+   ```
+
+3. **Deploy to Testnet**
+   ```bash
+   npx hardhat run scripts/deploy.js --network sepolia
+   ```
+
+4. **Verify on Block Explorer**
+   ```bash
+   npx hardhat verify --network sepolia CONTRACT_ADDRESS "constructor args"
+   ```
+
+### Deployment Script
+
+The deployment script (`scripts/deploy.js`) handles:
+
+- Deploying all four contracts in correct order
+- Setting up initial permissions
+- Configuring gateway address
+- Initializing timeout parameters
+- Logging deployment addresses for reference
+
+### Post-Deployment Checklist
+
+- [ ] All contracts deployed successfully
+- [ ] Verify contract code on block explorer
+- [ ] Set correct gateway address
+- [ ] Set correct owner address
+- [ ] Test all main functions work
+- [ ] Set up monitoring and alerts
+- [ ] Document deployed addresses
+- [ ] Notify stakeholders of deployment
+
+### Mainnet Deployment Considerations
+
+Before deploying to mainnet:
+
+1. **Audit**: Have contracts professionally audited
+2. **Testing**: Extensive testnet testing
+3. **Documentation**: Ensure all docs are up to date
+4. **Monitoring**: Set up transaction monitoring
+5. **Emergency**: Plan emergency procedures
+6. **Versioning**: Tag release version
+
+## Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────┐
+│           Client Application Layer                  │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  ┌──────────────────────┐      ┌─────────────────┐ │
+│  │  Request Handler     │      │ Encryption      │ │
+│  │  (Frontend)          │──────│ Library (FHEVM) │ │
+│  └──────────────────────┘      └─────────────────┘ │
+│                 │                                   │
+└─────────────────┼───────────────────────────────────┘
+                  │ encryptedData
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│         Smart Contract Layer (Ethereum)             │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  ┌──────────────────────────────────────────────┐  │
+│  │    GatewayTransaction (Core)                 │  │
+│  │  • submitRequest()                           │  │
+│  │  • gatewayCallback()                         │  │
+│  │  • requestRefund()                           │  │
+│  └──────────────────────────────────────────────┘  │
+│                      │                              │
+│         ┌────────────┼────────────┬──────────────┐  │
+│         ▼            ▼            ▼              ▼  │
+│  ┌────────────┐ ┌──────────┐ ┌──────────────┐ │   │
+│  │ Security  │ │ Privacy  │ │ Price        │ │   │
+│  │ Validator │ │ Div      │ │ Obfuscation  │ │   │
+│  └────────────┘ └──────────┘ └──────────────┘ │   │
+│                                                 │
+└─────────────────────────────────────────────────────┘
+                      │
+                      │ Result Callback
+                      ▼
+┌─────────────────────────────────────────────────────┐
+│           Off-Chain Gateway Service                 │
+├─────────────────────────────────────────────────────┤
+│  • Listen for RequestSubmitted events              │
+│  • Perform encrypted computation                  │
+│  • Call gatewayCallback with encrypted result    │
+└─────────────────────────────────────────────────────┘
+```
+
+## Contributing
+
+### Code Style
+
+- Follow Solidity style guidelines
+- Use 2-space indentation
+- Document all public functions
+- Include event emissions
+- Add security comments
+
+### Pull Request Process
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+### Testing Requirements
+
+All pull requests must:
+- Pass all existing tests
+- Include tests for new functionality
+- Maintain >90% code coverage
+- Have no security warnings
+
+### Reporting Issues
+
+Found a security issue? Please email security@zamadapp.io instead of using issue tracker.
+
+For bug reports:
+1. Describe the bug clearly
+2. Include steps to reproduce
+3. Provide expected vs actual behavior
+4. Include environment details
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For questions and support:
+- GitHub Issues: [Project Issues](https://github.com//issues)
+- Documentation: [docs/](./docs/)
+- Community: [Discord](https://discord.gg/zamadapp)
+
+## Acknowledgments
+
+- FHE implementation based on FHEVM project
+- Security best practices from OpenZeppelin
+- Gateway pattern inspired by Chainlink VRF
 
 ---
 
-## 🎯 Multiple Frontend Implementations Available
+**Last Updated:** November 2024
+**Status:** Production Ready
+**Maintenance:** Active
 
-Choose the frontend stack that best fits your needs:
-
-| Frontend | Technology | Features | Status | Location |
-|----------|-----------|----------|--------|----------|
-| **React + Vite** | React 18, TypeScript, Vite 5 | ⚡ HMR, 🎨 Modern UI, 🔌 SDK Hooks | ✅ **Recommended** | `./ConfidentialWasteRecycling/` |
-| **Next.js 14** | Next.js, App Router, SSR | 🌐 SEO, 🔄 API Routes, 📊 Full-Stack | ✅ Available | `./fhevm-react-template/examples/nextjs-waste-recycling/` |
-| **Static HTML** | Vanilla JS, Bootstrap 5 | 📦 Zero Build, 🚀 Quick Deploy | ✅ Available | `./public/index.html` |
-
-All implementations connect to the same smart contract: **`0x6a65Ea0Ce4F2fc31acFA2722d0153145dc48Cc83`**
-
----
-
-## 📋 Core Concept
+### The Problem: Privacy vs. Transparency Dilemma
 
 ### The Problem: Privacy vs. Transparency Dilemma
 

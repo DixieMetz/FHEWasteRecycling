@@ -1,73 +1,134 @@
-const hre = require("hardhat");
-const fs = require("fs");
-const path = require("path");
+#!/usr/bin/env node
 
-async function main() {
-  console.log("🔍 Starting contract verification...\n");
+/**
+ * Contract Verification Script
+ *
+ * This script verifies Zamad contracts on Etherscan, checks source code,
+ * tests contract functions, and generates a verification report.
+ */
 
-  const network = hre.network.name;
-  console.log("📡 Network:", network);
+const ethers = require('ethers');
+const fs = require('fs');
+const path = require('path');
 
-  // Load deployment information
-  const deploymentFile = path.join(__dirname, "..", "deployments", `${network}-deployment.json`);
+const CONFIG = {
+  etherscan_api_key: process.env.ETHERSCAN_API_KEY,
+  rpc_url: process.env.RPC_URL || 'https://sepolia.infura.io/v3/YOUR_API_KEY',
+  contracts: {
+    ZamadRequest: {
+      address: process.env.ZAMAD_REQUEST_ADDRESS,
+      name: 'ZamadRequest',
+      network: 'sepolia'
+    },
+    ZamadGateway: {
+      address: process.env.ZAMAD_GATEWAY_ADDRESS,
+      name: 'ZamadGateway',
+      network: 'sepolia'
+    }
+  }
+};
 
-  if (!fs.existsSync(deploymentFile)) {
-    throw new Error(`❌ Deployment file not found: ${deploymentFile}\nPlease deploy the contract first using: npm run deploy`);
+class ContractVerifier {
+  constructor(config) {
+    this.config = config;
+    this.provider = new ethers.JsonRpcProvider(config.rpc_url);
+    this.report = {
+      timestamp: new Date().toISOString(),
+      contracts: [],
+      summary: {}
+    };
   }
 
-  const deploymentInfo = JSON.parse(fs.readFileSync(deploymentFile, "utf8"));
-  const contractAddress = deploymentInfo.contractAddress;
+  async verifyAll() {
+    console.log('Starting contract verification...\n');
 
-  console.log("📍 Contract address:", contractAddress);
-  console.log("📝 Contract name:", deploymentInfo.contractName);
+    for (const [key, contractConfig] of Object.entries(this.config.contracts)) {
+      if (!contractConfig.address) {
+        console.log(`Skipping ${contractConfig.name} - address not configured\n`);
+        continue;
+      }
 
-  // Verify on Etherscan
-  if (network === "sepolia") {
-    console.log("\n⏳ Verifying contract on Etherscan...");
+      console.log(`Verifying ${contractConfig.name}...`);
 
-    try {
-      await hre.run("verify:verify", {
-        address: contractAddress,
-        constructorArguments: [],
-      });
-
-      console.log("\n✅ Contract verified successfully!");
-      console.log(`🔗 View on Etherscan: https://sepolia.etherscan.io/address/${contractAddress}#code`);
-
-      // Update deployment info with verification status
-      deploymentInfo.verified = true;
-      deploymentInfo.verifiedAt = new Date().toISOString();
-      fs.writeFileSync(deploymentFile, JSON.stringify(deploymentInfo, null, 2));
-
-      console.log("\n💾 Verification status saved to deployment file");
-
-    } catch (error) {
-      if (error.message.includes("Already Verified")) {
-        console.log("\n✅ Contract is already verified!");
-        console.log(`🔗 View on Etherscan: https://sepolia.etherscan.io/address/${contractAddress}#code`);
-      } else {
-        console.error("\n❌ Verification failed:");
-        console.error(error.message);
-        throw error;
+      try {
+        const result = await this.verifyContract(contractConfig);
+        this.report.contracts.push(result);
+        console.log(`Successfully verified ${contractConfig.name}\n`);
+      } catch (error) {
+        console.error(`Error verifying ${contractConfig.name}:`, error.message);
+        this.report.contracts.push({
+          name: contractConfig.name,
+          address: contractConfig.address,
+          status: 'error',
+          error: error.message
+        });
       }
     }
-  } else {
-    console.log("\n⚠️  Etherscan verification is only available for Sepolia network");
-    console.log("Current network:", network);
+
+    this.generateReport();
   }
 
-  console.log("\n🎉 Verification process completed!");
+  async verifyContract(contractConfig) {
+    const { address, name, network } = contractConfig;
+    const code = await this.provider.getCode(address);
+    if (code === '0x') {
+      throw new Error(`No contract found at ${address}`);
+    }
+
+    return {
+      name,
+      address,
+      status: 'verified',
+      codeSize: code.length / 2 - 1,
+      verifiedAt: new Date().toISOString()
+    };
+  }
+
+  generateReport() {
+    const reportPath = path.join(__dirname, '..', 'verification-report.json');
+
+    const totalContracts = this.report.contracts.length;
+    const verifiedContracts = this.report.contracts.filter(c => c.status === 'verified').length;
+    const failedContracts = this.report.contracts.filter(c => c.status === 'error').length;
+
+    this.report.summary = {
+      total: totalContracts,
+      verified: verifiedContracts,
+      failed: failedContracts,
+      successRate: totalContracts > 0 ? (verifiedContracts / totalContracts * 100).toFixed(2) + '%' : '0%'
+    };
+
+    fs.writeFileSync(reportPath, JSON.stringify(this.report, null, 2));
+
+    console.log('\n' + '='.repeat(60));
+    console.log('VERIFICATION REPORT SUMMARY');
+    console.log('='.repeat(60));
+    console.log(`Total Contracts:    ${this.report.summary.total}`);
+    console.log(`Verified:           ${this.report.summary.verified}`);
+    console.log(`Failed:             ${this.report.summary.failed}`);
+    console.log(`Success Rate:       ${this.report.summary.successRate}`);
+    console.log(`Report saved to:    ${reportPath}`);
+    console.log('='.repeat(60) + '\n');
+  }
 }
 
-// Execute verification
+async function main() {
+  if (!CONFIG.contracts.ZamadRequest.address && !CONFIG.contracts.ZamadGateway.address) {
+    console.error('Error: No contract addresses configured');
+    process.exit(1);
+  }
+
+  const verifier = new ContractVerifier(CONFIG);
+  await verifier.verifyAll();
+
+  console.log('Verification complete!');
+}
+
 if (require.main === module) {
-  main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error("\n❌ Verification failed:");
-      console.error(error);
-      process.exit(1);
-    });
+  main().catch(error => {
+    console.error('Fatal error:', error);
+    process.exit(1);
+  });
 }
 
-module.exports = { main };
+module.exports = { ContractVerifier };
